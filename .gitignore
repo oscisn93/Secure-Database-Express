@@ -1,0 +1,6 @@
+.cache/
+dist/
+node_modules/
+.env
+*.log
+*776
