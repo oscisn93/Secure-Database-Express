@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "lint": "tslint -c tslint.json -p tsconfig.json"
+  },
   "dependencies": {
     "@types/express": "^4.17.17",
     "@types/node": "^20.1.3",

@@ -1,9 +1,10 @@
 'use strict'
-const  express = require('express');
-const sessions = require('client-sessions');
-const bodyParser = require("body-parser");
+import express from 'express';
+import sessions from 'client-sessions';
+import bodyParser from 'body-parser';
 // const Database = require('./database.js');
-const { User } = require('./models.js')
+import { User } from './models';
+
 const app = express();
 
 app.set('view engine', 'ejs');
