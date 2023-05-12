@@ -1,14 +1,21 @@
+DROP IF EXISTS users;
+
+CREATE DATABASE users;
+
 USE users; 
 
 CREATE TABLE appusers (
-  username VARCHAR(255) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,
-  info VARCHAR(255) DEFAULT NULL,
-  session_id VARCHAR(255) DEFAULT NULL,
-  PRIMARY KEY(username)
+  username VARCHAR(255),
+  password VARCHAR(255),
+  info VARCHAR(255),
+  -- session_id VARCHAR(255)
 );
 
-INSERT INTO appusers VALUES('mikhail', 'passw1rd', 'Where are the cats?', '');
+INSERT INTO appusers VALUES('mikhail', 'passw0rd', 'Where are the cats?');
 
 GRANT ALL PRIVILEGES ON users.* TO 'appaccount'@'localhost' IDENTIFIED BY 'apppass';
+
+INSERT INTO appusers VALUES('testuser', 'testpass', 'Hellllo???');
+
+ALTER TABLE appusers ADD COLUMN session VARCHAR(255);
 

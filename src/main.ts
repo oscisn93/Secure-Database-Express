@@ -1,9 +1,6 @@
-'use strict'
 import express from 'express';
 import sessions from 'client-sessions';
 import bodyParser from 'body-parser';
-// const Database = require('./database.js');
-import { User } from './models';
 
 const app = express();
 
@@ -53,7 +50,7 @@ app.post('/login', async function(req, res){
 	let password = req.body.password;
   let match = false;
   
-  const user = await User.findByPk(userName);
+  // const user = await User.findByPk(userName);
   
   if (user.password === password) {
     console.log("We have a match!");
