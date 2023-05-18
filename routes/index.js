@@ -1,26 +1,16 @@
-/*
- * The entire contents of JavaScript modules
- * are automatically in strict mode,
- * with no statement needed to initiate it.
- */
 import express from "express";
 import sessions from "express-session";
 import bodyParser from "body-parser";
 import mysql from "mysql2/promise";
-
+import { config } from 'dotenv';
+// load environment variables
+config();
 // Connect to the database
-const mysqlConn = mysql.createConnection({
-  host: "localhost",
-  user: "appaccount",
-  password: "apppass",
-  multipleStatements: true,
-});
+const mysqlConn = mysql.createConnection(process.env.DATABASE_URL);
 
 // The express router for the app
 const router = express.Router();
 
-// set the view engine to ejs
-router.set("view engine", "ejs");
 // Needed to parse the request body
 router.use(bodyParser.urlencoded({ extended: true }));
 // The session settings middleware
@@ -218,3 +208,5 @@ router.get("/logout", function (req, res) {
   req.session.reset();
   res.redirect("/");
 });
+
+export default router;
