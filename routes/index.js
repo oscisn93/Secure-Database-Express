@@ -2,6 +2,7 @@ import express from "express";
 import sessions from "express-session";
 import bodyParser from "body-parser";
 import mysql from "mysql2/promise";
+import bcrypt from "bcrypt";
 // load environment variables
 import { config } from "dotenv";
 config();
@@ -11,13 +12,14 @@ const MIN_TO_SEC = 60;
 const SESSION_DURATION = 30;
 const SESSION_ACTIVE = 5;
 // Connect to the database
-const mysqlConn = await mysql.createConnection({
+const connection = await mysql.createConnection({
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
 });
-// The express router for the app
+// The express router we pass
+// to the app to handle the routes
 const router = express.Router();
 // Needed to parse the request body
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -39,7 +41,6 @@ router.use(
 // @param req - the request
 // @param res - the response
 router.get("/", function (req, res) {
-  // Is this user logged in?
   if (req.session.username) {
     res.redirect("/dashboard");
   } else {
@@ -50,7 +51,6 @@ router.get("/", function (req, res) {
 // @param req - the request
 // @param res - the response
 router.get("/dashboard", async (req, res) => {
-  // Is this user logged in? Then show the dashboard
   if (req.session.username) {
     res.render("dashboard", { username: req.session.username });
   } else {
@@ -58,37 +58,36 @@ router.get("/dashboard", async (req, res) => {
   }
 });
 // The login script
-// @param req - the request
+// @param req: {username: string, password: string}
 // @param res - the response
 router.post("/login", async (req, res) => {
   // Get the username and password data from the form
   let userName = req.body.username;
   let password = req.body.password;
-  // TODO: rewrite to use prepared statements
+  let sessionID = req.sessionID;
   // Construct the query
-  let query =
-    "USE users; SELECT username,password from appusers where username='" +
-    userName +
-    "' AND password='" +
-    password +
-    "'";
-  console.log(query);
-  // TODO: refactor to use async await
+  const query = 'SELECT `username`,`password` from `appusers` where `username`= ? AND `password`= ?';
   // Query the DB for the user
-  mysqlConn.query(query, function (err, qResult) {
+  connection.execute(query, [userName, password], function (err, result) {
     if (err) throw err;
-    console.log(qResult[1]);
+    console.log(result[1]);
     // Does the password match?
     let match = false;
-    // TODO: add bcrypt hashing and password checking
     // Go through the results of the second query
-    for (let account of qResult[1]) {
-      if (account["username"] == userName && account["password"] == password) {
-        console.log("Match!");
-        match = true;
-        break;
+    for (let account of result[1]) {
+      if (account["username"] == userName) {
+        bcrypt.compare(password, account["password"], function (err, passMatch) {
+          if (err) throw err;
+          match = passMatch;
+        });
+        if (match) break;
       }
     }
+    const query = 'UPDATE `appusers` SET `session_id` = ? WHERE `username` = ? AND `password` = ?';
+    connection.execute(query, [sessionID, userName, password], function (err, result) {
+      if (err) throw err;
+      console.log(result[1]);
+    });
     // Login succeeded! Set the session variable and send the user
     // to the dashboard
     if (match) {
@@ -104,11 +103,15 @@ router.post("/login", async (req, res) => {
 // @param req - the request
 // @param res - the response
 router.get("/logout", async (req, res) => {
-  // Kill the session
+  // update the user's session column
+  const query = 'UPDATE `appusers` SET `session_id` = NULL WHERE `session_id` = ?';
+  connection.execute(query, [req.sessionID], function (err, result) {
+    if (err) throw err;
+    console.log(result[1]);
+  });
+ // Kill the session
   req.session.reset();
-  // TODO: update the user's session column
-  // in the database so that the session is
-  // either null or some prefined value
+  // Send the user back to the login page
   res.redirect("/");
 });
 // export the routes
