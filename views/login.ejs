@@ -1,0 +1,38 @@
+<html>
+  <title>Sessions Login</title>
+  <link rel="stylesheet" href="/pico.min.css" />
+  <body>
+    <main>
+      <section class="container">
+        <h1>Login to Your Account!</h1>
+      </section>
+      <article>
+        <form action="/login" method="post">
+          <div>
+            <label for="username">Username:</label>
+            <input
+              type="text"
+              name="username"
+              placeholder="Enter your username"
+              aria-label="Username"
+              required
+            />
+          </div>
+          <div>
+            <label for="password">Password:</label>
+            <input
+              type="password"
+              name="password"
+              minlength="10"
+              required
+            />
+          </div>
+          <input type="submit" value="Submit" />
+        </form>
+      </article>
+      <footer class="container">
+        Don't have an account? <strong><a href="/register">Regiser Today!</a></strong>
+      </footer>
+    </main>
+  </body>
+</html>
