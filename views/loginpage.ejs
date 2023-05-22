@@ -1,19 +1,21 @@
 <html>
-<title> Sessions demo </title>
-<body bgcolor="lightblue">
-<h1>Welcome to the sessions demo!</h1>
-<br>
-
-<form action="/login" method="post">
-  User name:<br>
-  <input type="text" name="username" value="">
-  <br>
-  Password:<br>
-  <input type="password" name="password" value="">
-  <br><br>
-  <input type="submit" value="Submit">
-</form> 
-</form>
-
-</body>
+  <title>Login</title>
+  <link rel="stylesheet" href="/pico.min.css" />
+  <body>
+    <h1>Welcome to the secure login experience!</h1>
+    <br />
+    <form action="/login" method="post">
+      <article>
+        <div>
+          <label for="username">Username:</label>
+          <input type="text" name="username" value="" />
+        </div>
+        <div>
+          <label for="password">Password:</label>
+          <input type="password" name="password" value="" />
+        </div>
+        <input type="submit" value="Submit" />
+      </article>
+    </form>
+  </body>
 </html>

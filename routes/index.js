@@ -47,6 +47,9 @@ router.get("/", function (req, res) {
     res.render("loginpage");
   }
 });
+router.get("/register", function (req, res) {
+  res.render("register");
+});
 // The login page
 // @param req - the request
 // @param res - the response
